@@ -121,7 +121,8 @@ class HBNBCommand(cmd.Cmd):
         # match = re.match(r'^(\w+)\.show\(([^)]+)\)$', arg)
         # match = re.match(r'^\s*(\w*)\.show\((?:"([\w-]+)")?\)\s*$', arg)
         match = re.match(r'^\s*(\w+)\.show\(\s*[\'"]([\w-]+)[\'"]\s*\)\s*$', arg)
-        match2 = re.match(r'^\s*show\s+(\w+)\s+([\w-]+)\s*$', arg)
+        match2 = re.match(r'^\s*(\w+)\s+([\'"]?[\w-]+[\'"]?)\s*$', arg)
+
 
 
 
@@ -132,7 +133,27 @@ class HBNBCommand(cmd.Cmd):
             print("Invalid syntax. Use: <class name>.show('<id>') or Usage: show <class> <id>")
             return
         
+        class_name, instance_id = match.groups() if match else match2.groups()
+        print(f"Debug: class_name={class_name}, method_name=show, method_arg={instance_id}")
+
+        try:
+            class_type = eval(class_name)
+        except NameError:
+            print(f"Class '{class_name}' doesn't exist.")
+            return
+        
+        key = f"{class_name}.{instance_id}"
+
+        print(key)
+
+        if key in storage.all():
+            print(storage.all()[key])
+        else:
+            print(f"No instance found with id '{instance_id}' in class '{class_name}'")
+
+        
         return
+        
         class_name = match.group(1)
         obj_id = match.group(2).strip("'\"")
 
@@ -155,28 +176,35 @@ class HBNBCommand(cmd.Cmd):
             print(obj)
         
     
-    # # def do_destroy(self, arg):
-    # #     """Deletes an instance based on the class name and id (save the change into the JSON file)."""
-    # #     args = arg.split()
-    # #     if not args or len(args) < 1:
-    # #         print("** class name missing **")
-    # #         return
-    # #     try:
-    # #         cls = eval(args[0])
-    # #     except NameError:
-    # #         print("** class doesn't exist **")
-    # #         return
-    # #     if len(args) < 2:
-    # #         print("** instance id missing **")
-    # #         return
-    # #     instances = storage.all()
-    # #     instance_key = "{}.{}".format(args[0], args[1])
-    # #     if instance_key not in instances:
-    # #         print("** no instance found **")
-    # #     else:
-    # #         del instances[instance_key]
-    # #         storage.save()
+    def do_destroy(self, arg):
+        """Deletes an instance based on the class name and id (save the change into the JSON file)."""
+        # match_format = re.match(r'^\s*(\w+)\.destroy\(\s*[\'"]([\w-]+)[\'"]\s*\)\s*$', arg)
 
+        match = re.match(r'^\s*(\w+)\.destroy\(\s*[\'"]([\w-]+)[\'"]\s*\)\s*$', arg)
+        match2 = re.match(r'^\s*(\w+)\s+([\'"]?[\w-]+[\'"]?)\s*$', arg)
+
+        if not (match or match2):
+                print("Invalid syntax. Use: <class name>.show('<id>') or Usage: show <class> <id>")
+                return
+        
+        class_name, instance_id = match.groups() if match else match2.groups()
+        print(f"Debug: class_name={class_name}, method_name=show, method_arg={instance_id}")
+
+        try:
+            class_type = eval(class_name)
+        except NameError:
+            print(f"Class '{class_name}' doesn't exist.")
+            return
+        
+        instances = storage.all()
+        instance_key = "{}.{}".format(class_name, instance_id)
+
+        if instance_key not in instances:
+            print("No instance found.")
+        else:
+            del instances[instance_key]
+            storage.save()
+            
     # def do_destroy(self, arg):
     #     """Deletes an instance based on the class name and id, then saves the change into the JSON file"""
     #     args = shlex.split(arg)
@@ -296,33 +324,54 @@ class HBNBCommand(cmd.Cmd):
     #     print(instances)
 
 
-    # def do_update(self, arg):
-    #     """Updates an instance based on the class name and id by adding or updating attribute"""
-    #     args = shlex.split(arg)
-    #     if not args:
-    #         print("** class name missing **")
-    #         return
-    #     try:
-    #         class_name = args[0]
-    #         obj_id = args[1]
-    #         key = "{}.{}".format(class_name, obj_id)
-    #         obj = storage.all()[key]
-    #         if len(args) < 3:
-    #             print("** attribute name missing **")
-    #             return
-    #         attribute = args[2]
-    #         if len(args) < 4:
-    #             print("** value missing **")
-    #             return
-    #         value = args[3]
-    #         setattr(obj, attribute, value)
-    #         storage.save()
-    #     except IndexError:
-    #         print("** instance id missing **")
-    #     except KeyError:
-    #         print("** no instance found **")
-    #     except NameError:
-    #         print("** class doesn't exist **")
+    def do_update(self, arg):
+        """Updates an instance based on the class name and id by adding or updating attribute"""
+
+        # match = re.match(r'^(update\s+(\w+)\s+([a-zA-Z0-9-]+)\s+([a-zA-Z_]\w+)\s+"([^"]+)"|'r'(\w+)\.update\(([^)]+)\))$', arg)
+        match = re.match(r'^(update\s+(\w+)\s+([a-zA-Z0-9-]+)\s+([a-zA-Z_]\w+)\s+"([^"]+)"|'
+                     r'(\w+)\s+([a-zA-Z0-9-]+)\s+"([^"]+)"|'
+                     r'(\w+)\.update\(([^)]+)\))$', arg)
+       
+
+
+
+        if match:
+            groups = match.groups()
+            class_name, obj_id, attr_name, attr_value = groups[1], groups[2], groups[3], groups[4]
+
+        else:
+            print("Invalid syntax. Usage: update <class> <id> <attribute_name> <attribute_value> or "
+                "<class>.update(<id>, <attribute_name>, <attribute_value>) or "
+                "<class>.update(<id>, <dictionary>)")
+            return
+        print(arg)
+        return
+
+        args = shlex.split(arg)
+        if not args:
+            print("** class name missing **")
+            return
+        try:
+            class_name = args[0]
+            obj_id = args[1]
+            key = "{}.{}".format(class_name, obj_id)
+            obj = storage.all()[key]
+            if len(args) < 3:
+                print("** attribute name missing **")
+                return
+            attribute = args[2]
+            if len(args) < 4:
+                print("** value missing **")
+                return
+            value = args[3]
+            setattr(obj, attribute, value)
+            storage.save()
+        except IndexError:
+            print("** instance id missing **")
+        except KeyError:
+            print("** no instance found **")
+        except NameError:
+            print("** class doesn't exist **")
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
