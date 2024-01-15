@@ -62,8 +62,10 @@ class BaseModel:
     #     # return "[{}], ({}), {}".format(self.__class__.__name__, self.id, self.__dict__)
     #     return "[{}], ({}), {}".format(self.__class__.__name__, self.id, self.__dict__)
     def __str__(self):
-        """Return a formatted string representation of the instance"""
-        return "[{}], ({})".format(self.__class__.__name__, self.id)
+            """Return a formatted string representation of the instance."""
+            return "[{}], ({}) {}".format(
+                self.__class__.__name__, self.id, str(self.__dict__)
+            )
 
 
     
