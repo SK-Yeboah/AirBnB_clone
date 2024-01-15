@@ -327,23 +327,36 @@ class HBNBCommand(cmd.Cmd):
     def do_update(self, arg):
         """Updates an instance based on the class name and id by adding or updating attribute"""
 
-        # match = re.match(r'^(update\s+(\w+)\s+([a-zA-Z0-9-]+)\s+([a-zA-Z_]\w+)\s+"([^"]+)"|'r'(\w+)\.update\(([^)]+)\))$', arg)
-        match = re.match(r'^(update\s+(\w+)\s+([a-zA-Z0-9-]+)\s+([a-zA-Z_]\w+)\s+"([^"]+)"|'
-                     r'(\w+)\s+([a-zA-Z0-9-]+)\s+"([^"]+)"|'
-                     r'(\w+)\.update\(([^)]+)\))$', arg)
+        match = re.match(r'^(update\s+(\w+)\s+([a-zA-Z0-9-]+)\s+([a-zA-Z_]\w+)\s+"([^"]+)"|'r'(\w+)\.update\(([^)]+)\))$', arg)
+        # match = re.match(r'^(update\s+(\w+)\s+([a-zA-Z0-9-]+)\s+([a-zA-Z_]\w+)\s+"([^"]+)"|'
+        #              r'(\w+)\s+([a-zA-Z0-9-]+)\s+"([^"]+)"|'
+        #              r'(\w+)\.update\(([^)]+)\))$', arg)
        
 
-
-
         if match:
-            groups = match.groups()
+            print("Debug: Match found!")
+            groups = [group for group in match.groups() if group is not None]
             class_name, obj_id, attr_name, attr_value = groups[1], groups[2], groups[3], groups[4]
+            dict_args = groups[5] or groups[8]
+
+            print(f"Debug: class_name={class_name}, obj_id={obj_id}, attr_name={attr_name}, attr_value={attr_value}, dict_args={dict_args}")
 
         else:
-            print("Invalid syntax. Usage: update <class> <id> <attribute_name> <attribute_value> or "
-                "<class>.update(<id>, <attribute_name>, <attribute_value>) or "
-                "<class>.update(<id>, <dictionary>)")
+            print("Debug: No match found!")
+            print("Invalid syntax. Usage: update <class name> <id> <attribute name> '<attribute value>' or "
+                "<class name>.update(<id>, <attribute name>, '<attribute value>') or "
+                "<class name>.update(<id>, <dictionary>)")
             return
+
+        # if match:
+        #     groups = match.groups()
+        #     class_name, obj_id, attr_name, attr_value = groups[1], groups[2], groups[3], groups[4]
+
+        # else:
+        #     print("Invalid syntax. Usage: update <class> <id> <attribute_name> <attribute_value> or "
+        #         "<class>.update(<id>, <attribute_name>, <attribute_value>) or "
+        #         "<class>.update(<id>, <dictionary>)")
+        #     return
         print(arg)
         return
 
