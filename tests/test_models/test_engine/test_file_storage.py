@@ -29,6 +29,30 @@ class TestFileStorage(unittest.TestCase):
         if os.path.exists("test_file.json"):
             os.remove("test_file.json")
 
+    # def test_all_new_save_reload(self):
+    #     # Ensure 'all', 'new', 'save', and 'reload' work together
+    #     storage.reload()
+    #     all_objs_before = storage.all()
+
+    #     my_model = BaseModel()
+    #     my_model.name = "My_First_Model"
+    #     my_model.my_number = 89
+    #     my_model.save()
+
+    #     storage.reload()
+    #     all_objs_after = storage.all()
+
+    #     # Check that the new model is in the dictionary
+    #     self.assertIn(my_model.id, all_objs_after)
+
+    #     # Check that the contents of the new model are the same
+    #     self.assertEqual(my_model.to_dict(), all_objs_after[my_model.id].to_dict())
+
+    #     # Check that all other objects are the same
+    #     for key, value in all_objs_before.items():
+    #         if key != my_model.id:
+    #             self.assertEqual(value.to_dict(), all_objs_after[key].to_dict())
+
     def test_all_new_save_reload(self):
         # Ensure 'all', 'new', 'save', and 'reload' work together
         storage.reload()
@@ -43,15 +67,16 @@ class TestFileStorage(unittest.TestCase):
         all_objs_after = storage.all()
 
         # Check that the new model is in the dictionary
-        self.assertIn(my_model.id, all_objs_after)
+        self.assertIn(f"{my_model.__class__.__name__}.{my_model.id}", all_objs_after)
 
         # Check that the contents of the new model are the same
-        self.assertEqual(my_model.to_dict(), all_objs_after[my_model.id].to_dict())
+        self.assertEqual(my_model.to_dict(), all_objs_after[f"{my_model.__class__.__name__}.{my_model.id}"].to_dict())
 
         # Check that all other objects are the same
         for key, value in all_objs_before.items():
-            if key != my_model.id:
+            if key != f"{my_model.__class__.__name__}.{my_model.id}":
                 self.assertEqual(value.to_dict(), all_objs_after[key].to_dict())
+
 
 
 
@@ -75,6 +100,20 @@ class TestFileStorage(unittest.TestCase):
 
         # If no exception is raised, the test is successful
 
+    # def test_reload_with_existing_file(self):
+    #     # Ensure reload works with an existing file
+    #     my_model = BaseModel()
+    #     my_model.name = "My_First_Model"
+    #     my_model.my_number = 89
+    #     my_model.save()
+
+    #     storage.reload()
+
+    #     reloaded_objs = storage.all()
+
+    #     self.assertIn(f"{my_model.__class__.__name__}.{my_model.id}", reloaded_objs)
+    #     self.assertEqual(my_model.to_dict(), reloaded_objs[my_model.id].to_dict())
+        
     def test_reload_with_existing_file(self):
         # Ensure reload works with an existing file
         my_model = BaseModel()
@@ -86,8 +125,12 @@ class TestFileStorage(unittest.TestCase):
 
         reloaded_objs = storage.all()
 
-        self.assertIn(my_model.id, reloaded_objs)
-        self.assertEqual(my_model.to_dict(), reloaded_objs[my_model.id].to_dict())
+        print(f"my_model.id: {my_model.id}")
+        print(f"reloaded_objs: {reloaded_objs}")
+
+        self.assertIn(f"{my_model.__class__.__name__}.{my_model.id}", reloaded_objs)
+        self.assertEqual(my_model.to_dict(), reloaded_objs[f"{my_model.__class__.__name__}.{my_model.id}"].to_dict())
+
 
     def test_reload_with_multiple_objects(self):
         # Ensure reload works with multiple objects in the file
@@ -103,8 +146,10 @@ class TestFileStorage(unittest.TestCase):
 
         reloaded_objs = storage.all()
 
-        self.assertIn(model_1.id, reloaded_objs)
-        self.assertIn(user.id, reloaded_objs)
+        # self.assertIn(model_1.id, reloaded_objs)
+        # self.assertIn(user.id, reloaded_objs)
+        self.assertIn(f"{model_1.__class__.__name__}.{model_1.id}", reloaded_objs)
+        self.assertIn(f"{user.__class__.__name__}.{user.id}", reloaded_objs)
 
 if __name__ == '__main__':
     unittest.main()
