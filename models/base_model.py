@@ -37,26 +37,48 @@ class BaseModel:
             *args: Unused positional arguments.
             **kwargs: Dictionary containing attribute names and values for recreation.
         """
-        from models import storage
-        date_format = "%Y-%m-%dT%H:%M:%S.%f"
-        if kwargs:
-            # Populate instance  attributes from dictionary representation
-            if '__class__' in kwargs:
-                del kwargs["__class__"]
-            for key, value in kwargs.items():
-                if key in ["created_at", "updated_at"]:
-                    if isinstance(value, str):
-                        setattr(self, key, datetime.strptime(value, date_format))
-                    else:
-                        setattr(self, key, value)
+        # from models import storage
+        # date_format = "%Y-%m-%dT%H:%M:%S.%f"
+        # if kwargs:
+        #     # Populate instance  attributes from dictionary representation
+        #     if '__class__' in kwargs:
+        #         del kwargs["__class__"]
+        #     for key, value in kwargs.items():
+        #         if key in ["created_at", "updated_at"]:
+        #             if isinstance(value, str):
+        #                 setattr(self, key, datetime.strptime(value, date_format))
+        #             else:
+        #                 setattr(self, key, value)
+        #         else:
+        #             setattr(self, key, value)
+        # else:
+        #     self.id = str(uuid.uuid4())
+        #     self.created_at = datetime.now()
+        #     self.updated_at = datetime.now()
+        # if not kwargs:
+        #     storage.new(self)
+
+    def __init__(self, *args, **kwargs):
+        """__init__ method & instantiation of class Basemodel
+
+        Args:
+            *args.
+            **kwargs (dict): Key/value pairs
+        """
+        self.id = str(uuid.uuid4())
+        self.created_at = datetime.now()
+        self.updated_at = datetime.now()
+
+        if kwargs is not None and len(kwargs) > 0:
+            for k, v in kwargs.items():
+                if k == "__class__":
+                    continue
+                elif k in ["created_at", "updated_at"]:
+                    setattr(self, k, datetime.fromisoformat(v))
                 else:
-                    setattr(self, key, value)
+                    setattr(self, k, v)
         else:
-            self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = datetime.now()
-        if not kwargs:
-            storage.new(self)
+            models.storage.new(self)
     
     # def __str__(self):
     #     """Return a formated string representation of the instance"""
