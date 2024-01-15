@@ -1,6 +1,4 @@
 #!/usr/bin/python3
-
-
 import sys
 from os import path
 
