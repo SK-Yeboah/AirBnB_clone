@@ -1,9 +1,5 @@
 #!/usr/bin/python3
-"""
-
-This script defines a simple Flask web application that listens on 0.0.0.0, port 5000.
-
-"""
+"""This script defines a simple Flask web application that listens on 0.0.0.0, port 5000."""
 from flask import Flask
 
 # Create a Flask application instance
