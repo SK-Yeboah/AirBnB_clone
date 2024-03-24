@@ -117,9 +117,19 @@ class FileStorage:
                   "Amenity": Amenity, "City": City, "Review": Review,
                   "State": State}
 
-    def all(self):
+   
+    def all(self, cls=None):
         '''Return dictionary of <class>.<id> : object instance'''
+        if cls is not None:
+            return {k: v for k, v in self.__objects.items() if isinstance(v, cls)}
         return self.__objects
+    
+    def delete(self, obj=None):
+        '''Deletes obj from __objects if it’s inside'''
+        if obj is not None:
+            key = obj.__class__.__name__ + '.' + obj.id
+            self.__objects.pop(key, None)
+    
 
     def new(self, obj):
         '''Set new __objects to existing dictionary of instances'''
@@ -146,3 +156,8 @@ class FileStorage:
                 self.__objects[key] = obj
         except FileNotFoundError:
             pass
+    def close(self):
+        """
+            Calls the reload method for deserializing the JSON file to Object
+        """
+        self.reload()
