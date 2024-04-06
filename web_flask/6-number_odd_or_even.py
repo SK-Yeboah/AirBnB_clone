@@ -49,16 +49,14 @@ def display_number_template(n):
     return render_template('5-number.html', number=n)
 
 
-# Define a route for   '/number_odd_or_even/<n>
+# Define a route for '/number_odd_or_even/<n>'
 @app.route('/number_odd_or_even/<int:n>', strict_slashes=False)
 def display_number_odd_or_even(n):
     if n % 2 == 0:
         odd_or_even = 'even'
     else:
         odd_or_even = 'odd'
-    file = '6-number_odd_or_even.html'
-    number = n
-    return render_template(file, number, odd_or_even=odd_or_even)
+    return render_template('6-number_odd_or_even.html', number=n, odd_or_even=odd_or_even)
 
 
 # Run flash
